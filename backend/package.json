@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon app",
     "build": "babel src -d lib",
-    "test": ".\\node_modules\\jasmine\\bin\\jasmine.js"
+    "test": "node_modules/.bin/jasmine"
   },
   "keywords": [
     "teamwork"
@@ -16,6 +16,7 @@
   "dependencies": {
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "pg": "^7.12.1",
     "request": "^2.88.0"
   },
   "devDependencies": {
