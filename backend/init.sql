@@ -1,0 +1,2 @@
+INSERT INTO users (firstName, lastName, email, password, gender, jobRole, department, address, isAdmin)
+VALUES  ('Admin', 'Admin', 'admin@teamwork.com', 'admin', 'male', 'DevOps', 'Operations', 'Lagos, Nigeria', 'true');
