@@ -3,6 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 const client = require('../db/config');
 
+
 const app = express();
 
 app.use(express.json());
@@ -10,31 +11,17 @@ app.use(express.urlencoded({extended: false}));
 
 app.use(cors());
 
-// const database = {
-//   articles : [
-//     {
-//       articleId : 1,
-//       title : "How to become a dev",
-//       article: "You will need to dedicate time to practice everyday",
-//       date: new Date()
-//     }
-//   ]
-// }
-
 exports.createArticle = (req, res, next) => {
   console.log(req.body)
+  
+  
   const { title, article, date } = req.body
 
-  // database.articles.push({
-  //   articleId : 2,
-  //   title : title,
-  //   article: article,
-  //   date: new Date()
-  // })
-  // res.json(database.articles[database.articles.length-1])
-  const sql = 'INSERT INTO articles (title, article, date) VALUES ($1, $2, $3)';
+  const sql = 'INSERT INTO articles (title, article, now()::date) VALUES ($1, $2, $3)';
+
   
   const params = [title, article, date];
+
   return client.query(sql, params)
   .then(() => {
     res.status(201).json({
@@ -49,12 +36,13 @@ exports.createArticle = (req, res, next) => {
 }
 
 exports.getArticleById = (req, res, next) => {
-  const sql = 'SELECT * FROM articles WHERE articleId = $1;'
+  const sql = 'SELECT now()::date * FROM articles WHERE articleId = $1;'
   const params = [parseInt(req.params.id)];
   return client.query(sql, params)
   .then(article => {
     res.status(200).json({
-      result: article.rows
+      result: article.rows,
+      
     })
   })
   .catch(error => {
@@ -72,7 +60,8 @@ exports.getArticles = (req, res, next) => {
   .then((articles) => {
     res.status(200).json({
       message: 'Articles requested successfully',
-      log: console.log(articles.rows)
+      log: console.log(articles.rows),
+      
     })
   })
   .catch(error => {
@@ -84,8 +73,9 @@ exports.getArticles = (req, res, next) => {
 }
 
 exports.updateArticleById = (req, res, next) => {
+  
   const { title, article, date } = req.body
-  const sql = 'UPDATE articles SET title = $1, article = $2, date = $3 WHERE articleId = $4;'
+  const sql = 'UPDATE articles SET title = $1, article = $2, now()::date = $3 WHERE articleId = $4;'
   const params = [title, article, date, parseInt(req.params.id)]
   return client.query(sql, params)
   .then(article => {
@@ -103,7 +93,7 @@ exports.updateArticleById = (req, res, next) => {
 
 exports.deleteArticleById = (req, res, next) => {
   
-  const sql = 'DELETE FROM articles WHERE articleId = $1;'
+  const sql = 'DELETE now() FROM articles WHERE articleId = $1;'
   const params = [parseInt(req.params.id)]
   return client.query(sql, params)
   .then(result => {
