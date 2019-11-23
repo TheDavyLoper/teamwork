@@ -4,8 +4,7 @@
   "description": "an internal social media for an organization",
   "main": "app.js",
   "scripts": {
-    "start": "node app",
-    "nodemon": "nodemon app",
+    "start": "nodemon app",
     "build": "babel src -d lib",
     "test": "node_modules/.bin/jasmine"
   },
@@ -15,7 +14,6 @@
   "author": "David Akpan",
   "license": "ISC",
   "dependencies": {
-    "@hapi/joi": "^16.1.7",
     "bcrypt": "^3.0.6",
     "cloudinary": "^1.17.0",
     "cors": "^2.8.5",
