@@ -2,8 +2,9 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const client = require('../db/config');
-const { registerUser } = require('../utilities/validation');
+const { registerUser, userLogin } = require('../utilities/validation');
 const bcrypt = require('bcrypt');
+//const jwt = require('jsonwebtoken');
 
 const app = express();
 
@@ -46,16 +47,31 @@ exports.createUser = (req, res, next) => {
 }
 
 exports.signin = (req, res, next) => {
-  const { email, password } = req.body;
+  //validate input data
+  const { error } = userLogin(req.body);
+  if (error) return res.status(404).send(error.details[0].message); 
 
-  if (req.body.email === database.users[0].email && req.body.password === database.users[0].password) {
-    res.status(200).json({
-      message: 'logged in successfully'
-    })
-  }else {
-    res.status(404).json({
-      message: 'user not found'
-    })
-  }
-}
+  const { email } = req.body
+  const sql = 'SELECT password FROM users WHERE email = $1'
+  const params = [email];  
+  client.query(sql, params, (err, result) => {
+    const hash = result.rows[0].password;
+    // console.log(result)
+    if (result) {
+      bcrypt.compare(req.body.password, hash, (error, response) => {
+        if (response) {
+          res.status(200).json({
+            message: "passwords matched"
+          })
+        } else {
+          res.status(404).json({
+            error: error
+          })
+        }
+      })
+    }
+  })
+    
+};
+
 
