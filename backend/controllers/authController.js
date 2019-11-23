@@ -1,9 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-//const bcrypt = require('bcrypt');
 const client = require('../db/config');
-const joi = require('joi');
+const { registerUser } = require('../utilities/validation');
+const bcrypt = require('bcrypt');
 
 const app = express();
 
@@ -13,45 +13,35 @@ app.use(express.urlencoded({extended: true}));
 app.use(cors());
 
 
-
 exports.createUser = (req, res, next) => {
-  console.log('post body', req.body)
 
-  const schema = joi.object().keys({
-    firstName: joi.string().trim().required(),
-    lastName: joi.string().trim().required(),
-    email: joi.string().trim().email().required(),
-    password: joi.string().trim().min(6).required(),
-    gender: joi.string().trim().required(),
-    jobRole: joi.string().trim().required(),
-    department: joi.string().trim().required(),
-    address: joi.string().trim().required(),
-    isAdmin: joi.string().trim().required()
-  });
-  joi.validate(req.body, schema, (err, result) => {
-    if (err) {
-      res.send(err)
-    }
-    res.send(result)
-  })
-  
+  //validate the data for creating user
+  const { error } = registerUser(req.body);
+  if (error) return res.status(404).send(error.details[0].message);
+
   const { firstName, lastName, email, password, gender, jobRole, department, address, isAdmin } = req.body
-  
-  const sql = 'INSERT INTO users (firstName, lastName, email, password, gender, jobRole, department, address, isAdmin) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)';
-  
-  const params = [firstName, lastName, email, password, gender, jobRole, department, address, isAdmin];
-  
-  return client.query(sql, params)
-  .then(() => {
-    res.status(201).json({
-      message: 'User account successfully created',
+
+  //function to hash the password
+  bcrypt.hash(password, 10, (err, hash) => {
+
+    const sql = 'INSERT INTO users (firstName, lastName, email, password, gender, jobRole, department, address, isAdmin) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)';
+    
+    const params = [firstName, lastName, email, hash, gender, jobRole, department, address, isAdmin];
+    
+    return client.query(sql, params)
+    .then(() => {
+      res.status(201).json({
+        message: 'User account successfully created',
+        log: console.log(req.body)
+      })
     })
+    .catch(error => {
+      res.status(404).json({
+        message: error
+      })
+    }) 
   })
-  .catch(error => {
-    res.status(404).json({
-      message: error
-    })
-  }) 
+  
       
 }
 
