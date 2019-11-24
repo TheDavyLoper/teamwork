@@ -61,7 +61,7 @@ exports.signin = (req, res, next) => {
       bcrypt.compare(req.body.password, hash, (error, response) => {
         if (response) {
           res.status(200).json({
-            message: "passwords matched"
+            message: "Password match"
           })
         } else {
           res.status(404).json({
