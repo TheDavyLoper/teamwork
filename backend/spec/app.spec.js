@@ -8,6 +8,24 @@ describe('apiTest', () => {
   afterAll(() => {
     apiTest.close()
   });
+
+  describe('GET /', () => {
+    const data = {};
+    beforeAll(done => {
+      Request.listen(`http://localhost:${process.env.port || 3000}`, (error, response, body) => {
+        data.status = response.statusCode;
+        data.body = body
+        done();
+      });
+    })
+    it('status 200', () => {
+      expect(data.status).toBe(200);
+    })
+    it('console message', () => {
+      expect(data.body).toBe('App running on port ${port}')
+    })
+  })
+
   describe('POST /api/v1auth/create-user', () => {
     const data = {};
     beforeAll(done => {

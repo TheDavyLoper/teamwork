@@ -16,9 +16,9 @@ describe('Server', () => {
     const data = {};
 
     beforeAll((done) => {
-      Request.get(`http:/localhost:${process.env.PORT || 5000}/api/v1/gifs/1`, (error, res, body) => {
+      Request.get(`http:/localhost:${process.env.PORT || 5000}`, (error, res, body) => {
         data.status = 200
-        // data.body = body;
+        data.body = body;
         done();
       });
     });
