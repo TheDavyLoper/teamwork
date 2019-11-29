@@ -12,7 +12,6 @@ const router = express.Router();
 
 router.post('/create-user', authController.createUser);
 router.post('/signin', authController.signin)
-router.post('/', authController.home);
 
 
 module.exports = router
